@@ -120,13 +120,16 @@ SortTemp* readLog(FILE* log){
 
 //check if log file or read file exist AND can be read. if join file exist but empty, concerned as "no recording"
 bool LogCheck(string filename){
-	bool check_result;
-	FILE* fp = fopen(filename.c_str(), "r");
-	check_result = (fp != NULL);
-	if(fp != NULL){
-		check_result = fgetc(fp) != EOF;
-		fclose(fp);}
-	return check_result;
+	ifstream in(filename.c_str());
+	if(!in){
+		cout << "failed to open "<< filename <<endl;
+		return false;
+	}
+	else{
+		bool empty = (in.get(), in.eof());
+		
+		return (empty? false : true);
+	}
 }
 
 
@@ -251,8 +254,6 @@ void Mergejoin(FILE* outFile, FILE* depFile, FILE* empFile, FILE* log){
 			Done = true;
 			break;}
 		timeout++;
-		
-	
 	}
 	cout << "Finish at " << timeout << endl; // testing used.
 }
@@ -307,7 +308,7 @@ int main(){
 	fclose(department);
 	fclose(employee);
 	remove("JOIN_LOG");
-	//remove log so it can be run again without delete log by hand.
+	//remove log so it can run again without delete log by hand.
 	sleep(1);
 	if(LogCheck("JOIN_LOG"))
 		cout << "Remove failed, something happened! Please check JOIN_LOG" << endl;
